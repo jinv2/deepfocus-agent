@@ -16,5 +16,9 @@
 - Windows: `.exe`
 - Linux: `.deb`
 - macOS: `.dmg`
+
+- ## 🌐 开发者
+本项目由 [深思 (Shensi)](https://shensist.top/) 维护。
+*专注打造极简、高效的 AI 生产力工具。*
 ---
 Developed by [Shensi](https://shensist.top/) - *Focus on what matters.*
