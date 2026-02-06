@@ -2,6 +2,9 @@
 import React, { useState } from 'react';
 import { Sparkles, Loader2, Rocket, Layers, Zap, Scissors, Target } from 'lucide-react';
 
+// 【关键修改】在顶部定义，构建时 Next.js 会自动替换这里
+const GROQ_API_KEY = process.env.NEXT_PUBLIC_GROQ_API_KEY;
+
 export default function DeepFocus() {
   const [query, setQuery] = useState('');
   const [result, setResult] = useState(null);
@@ -9,17 +12,20 @@ export default function DeepFocus() {
 
   const handleSolve = async () => {
     if (!query) return;
+    // 如果构建时没注入成功，这里能给出明确提示
+    if (!GROQ_API_KEY) {
+      alert("错误：API Key 未配置。请检查 GitHub Secrets。");
+      return;
+    }
+    
     setResult(null);
     setLoading(true);
     try {
-      // 这里的环境变量会在 GitHub Action 打包时通过 next.config.mjs 注入
-      const apiKey = process.env.NEXT_PUBLIC_GROQ_API_KEY;
-
       const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${apiKey}`
+          'Authorization': `Bearer ${GROQ_API_KEY}` // 使用顶部定义的常量
         },
         body: JSON.stringify({
           model: "llama-3.3-70b-versatile",
@@ -28,7 +34,7 @@ export default function DeepFocus() {
               role: "system", 
               content: "你是一个产品创新专家。请用中文拆解需求。要求：L-利用具体开源项目名；A-描述AI如何增强交互；T-列出必须砍掉的臃肿功能；T-定义极小众受众；mvpStep-给出一个可以直接上线的单网页方案。必须严格输出JSON: {name, leverage, aiEnhance, trim, target, mvpStep}" 
             },
-            { role: "user", content: "请拆解这个单一肢体产品需求: " + query }
+            { role: "user", content: "请拆解这个需求: " + query }
           ],
           response_format: { type: "json_object" },
           temperature: 0.6
@@ -38,14 +44,12 @@ export default function DeepFocus() {
       const data = await res.json();
       
       if (data.error) {
-        alert("AI 响应错误: " + (data.error.message || "未知错误"));
+        alert("AI 错误: " + (data.error.message || "未知错误"));
       } else {
-        const content = JSON.parse(data.choices[0].message.content);
-        setResult(content);
+        setResult(JSON.parse(data.choices[0].message.content));
       }
     } catch (e) {
-      console.error(e);
-      alert("网络连接失败，请检查网络或 API Key 设置");
+      alert("网络请求失败");
     } finally {
       setLoading(false);
     }

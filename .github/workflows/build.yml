@@ -8,12 +8,12 @@ on:
 jobs:
   release:
     runs-on: ${{ matrix.os }}
-    # 授予写入权限，否则无法创建 Release
+    # 【核心修复】显式授予写入权限，否则 Actions 无法上传生成的 .exe
     permissions:
       contents: write
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
+        os: [ubuntu-latest, windows-latest] # 先跑这两个最稳的
 
     steps:
       - name: Checkout code
@@ -22,22 +22,24 @@ jobs:
       - name: Install Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 20 # 升级到 Node 20
+          node-version: 20
+          cache: 'npm'
 
       - name: Install dependencies
-        # 使用 --legacy-peer-deps 解决 npm 插件冲突
         run: npm install --legacy-peer-deps
 
       - name: Next.js Export
         run: npm run build
         env:
+          # 必须同时设置这两个，确保 Next.js 构建进程能捕获到
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
           NEXT_PUBLIC_GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
-          # 强制禁用 Lint 和 TS 检查以确保构建通过
-          NEXT_DISABLE_ESLINT: true
-          NEXT_DISABLE_TYPECHECK: true
 
       - name: Build Electron App
         uses: samuelmeuli/action-electron-builder@v1
         with:
+          # 【核心修复】使用系统自带的 GITHUB_TOKEN
           github_token: ${{ secrets.GITHUB_TOKEN }}
           release: true
+          # 增加这一行，防止某些系统下的构建卡死
+          max_attempts: 3
