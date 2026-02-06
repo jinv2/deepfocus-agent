@@ -7,8 +7,11 @@ on:
 
 jobs:
   release:
-    # 暂时只跑 Windows，因为 Windows 环境最宽容
-    runs-on: windows-latest
+    strategy:
+      matrix:
+        # 恢复三端构建
+        os: [windows-latest, ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
     permissions:
       contents: write
 
