@@ -1,6 +1,8 @@
 {
   "name": "deepfocus-agent",
-  "version": "1.0.0",
+  "version": "1.5.0",
+  "license": "MIT",
+  "author": "Shensi (https://shensist.top/)",
   "private": true,
   "main": "main.js",
   "scripts": {
