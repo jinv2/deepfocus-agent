@@ -1,12 +1,14 @@
 {
-  "name": "deepfocus-mvp",
-  "version": "0.1.0",
+  "name": "deepfocus-agent",
+  "version": "1.0.0",
   "private": true,
+  "main": "main.js",  // <--- [NEW] 必须告诉 Electron 启动文件
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "dist": "electron-builder" // <--- [NEW] 必须有打包指令
   },
   "dependencies": {
     "clsx": "^2.1.0",
@@ -26,5 +28,20 @@
     "postcss": "^8",
     "tailwindcss": "^3.4.1",
     "typescript": "^5"
+  },
+  "build": { // <--- [NEW] 这整块是打包的核心配置
+    "appId": "com.jinv2.deepfocus",
+    "productName": "DeepFocusAgent",
+    "files": [
+      "out/**/*",
+      "main.js",
+      "package.json"
+    ],
+    "directories": {
+      "output": "dist"
+    },
+    "linux": { "target": "deb" },
+    "win": { "target": "nsis" },
+    "mac": { "target": "dmg" }
   }
 }
