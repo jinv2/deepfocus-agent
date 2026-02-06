@@ -37,11 +37,12 @@
       "main.js",
       "package.json"
     ],
+    "linux": {
+      "target": ["AppImage", "deb"],
+      "category": "Utility"
+    },
     "directories": {
       "output": "dist"
-    },
-    "linux": {
-      "target": "deb"
     },
     "win": {
       "target": "nsis"

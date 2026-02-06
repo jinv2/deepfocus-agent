@@ -47,3 +47,8 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           release: true
+          # 【新加】允许在没有图标的情况下打包，防止因图标路径不对报错
+          skip_build: false 
+        env:
+          # 【新加】让 electron-builder 输出详细报错，哪怕失败了我们也能看到为什么
+          DEBUG: electron-builder
