@@ -8,9 +8,11 @@ on:
 jobs:
   release:
     strategy:
+      # 【关键修改】如果一个系统崩了，其他系统继续跑，不取消
+      fail-fast: false
       matrix:
-        # 恢复三端构建
         os: [windows-latest, ubuntu-latest, macos-latest]
+    
     runs-on: ${{ matrix.os }}
     permissions:
       contents: write
@@ -25,6 +27,13 @@ jobs:
           node-version: 20
           cache: 'npm'
 
+      # 【针对 Linux 的修复】安装打包 .deb 必须的依赖
+      - name: Install Linux dependencies
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libarchive-tools build-essential
+
       - name: Install dependencies
         run: npm install --legacy-peer-deps
 
@@ -37,5 +46,4 @@ jobs:
         uses: samuelmeuli/action-electron-builder@v1
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          # 设为 true，它会自动创建 Release 页面并上传文件
           release: true
