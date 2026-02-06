@@ -16,3 +16,5 @@
 - Windows: `.exe`
 - Linux: `.deb`
 - macOS: `.dmg`
+---
+Developed by [Shensi](https://shensist.top/) - *Focus on what matters.*
