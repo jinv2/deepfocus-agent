@@ -38,7 +38,7 @@
       "package.json"
     ],
     "linux": {
-      "target": ["AppImage", "deb"],
+      "target": ["AppImage"],
       "category": "Utility"
     },
     "directories": {
