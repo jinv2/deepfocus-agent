@@ -30,8 +30,15 @@
     "typescript": "^5"
   },
   "build": {
-    "appId": "com.jinv2.deepfocus",
+    "appId": "com.shensist.deepfocus",
     "productName": "DeepFocusAgent",
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "jinv2",
+        "repo": "deepfocus-agent"
+      }
+    ],
     "files": [
       "out/**/*",
       "main.js",
