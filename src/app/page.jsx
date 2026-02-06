@@ -9,23 +9,43 @@ export default function DeepFocus() {
 
   const handleSolve = async () => {
     if (!query) return;
-    setResult(null); // 清空上次结果
+    setResult(null);
     setLoading(true);
     try {
-      const res = await fetch('/api/chat', { 
-        method: 'POST', 
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt: query }) 
+      // 这里的环境变量会在 GitHub Action 打包时通过 next.config.mjs 注入
+      const apiKey = process.env.NEXT_PUBLIC_GROQ_API_KEY;
+
+      const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${apiKey}`
+        },
+        body: JSON.stringify({
+          model: "llama-3.3-70b-versatile",
+          messages: [
+            { 
+              role: "system", 
+              content: "你是一个产品创新专家。请用中文拆解需求。要求：L-利用具体开源项目名；A-描述AI如何增强交互；T-列出必须砍掉的臃肿功能；T-定义极小众受众；mvpStep-给出一个可以直接上线的单网页方案。必须严格输出JSON: {name, leverage, aiEnhance, trim, target, mvpStep}" 
+            },
+            { role: "user", content: "请拆解这个单一肢体产品需求: " + query }
+          ],
+          response_format: { type: "json_object" },
+          temperature: 0.6
+        })
       });
+
       const data = await res.json();
-      // 增加容错：如果返回的是错误信息则弹窗
+      
       if (data.error) {
-        alert("AI 响应错误: " + data.error);
+        alert("AI 响应错误: " + (data.error.message || "未知错误"));
       } else {
-        setResult(data);
+        const content = JSON.parse(data.choices[0].message.content);
+        setResult(content);
       }
     } catch (e) {
-      alert("网络连接失败，请检查终端日志");
+      console.error(e);
+      alert("网络连接失败，请检查网络或 API Key 设置");
     } finally {
       setLoading(false);
     }
@@ -36,31 +56,31 @@ export default function DeepFocus() {
       <div className="max-w-4xl mx-auto text-center pt-10">
         <h1 className="text-4xl font-bold mb-2 tracking-tighter text-blue-600">DEEP FOCUS</h1>
         <p className="text-zinc-500 mb-10 text-sm tracking-[0.3em]">做深不做广 · 做小不做大</p>
-        
+
         <div className="max-w-xl mx-auto mb-12">
-          <input 
+          <input
             className="w-full bg-zinc-900 border border-zinc-800 rounded-2xl py-4 px-6 text-lg outline-none focus:border-blue-500 transition-all text-white mb-4"
             placeholder="输入巨头产品 (如: Photoshop)..."
             value={query}
             onChange={e => setQuery(e.target.value)}
             onKeyDown={e => e.key === 'Enter' && handleSolve()}
           />
-          <button 
-            onClick={handleSolve} 
+          <button
+            onClick={handleSolve}
             disabled={loading}
             className="w-full bg-blue-600 py-4 rounded-2xl font-bold flex justify-center items-center gap-2 hover:bg-blue-500 disabled:bg-zinc-800 transition-all"
           >
-            {loading ? <Loader2 className="animate-spin" /> : <Sparkles size={18} />} 
+            {loading ? <Loader2 className="animate-spin" /> : <Sparkles size={18} />}
             {loading ? "正在重组灵魂..." : "启动核心拆解"}
           </button>
         </div>
 
         {result && (
-          <div className="max-w-2xl mx-auto text-left bg-zinc-900/80 p-8 rounded-[2rem] border border-blue-900/30 animate-in fade-in zoom-in duration-300">
+          <div className="max-w-2xl mx-auto text-left bg-zinc-900/80 p-8 rounded-[2rem] border border-blue-900/30">
             <h2 className="text-2xl font-bold text-white mb-6 flex items-center gap-2">
               <div className="w-2 h-2 bg-blue-500 rounded-full" /> {result.name || "创新方案"}
             </h2>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8 text-sm">
               <Item label="L-Leverage" icon={<Layers size={14}/>} content={result.leverage} />
               <Item label="A-AI Enhance" icon={<Zap size={14}/>} content={result.aiEnhance} />

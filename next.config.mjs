@@ -1,9 +1,11 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: 'export',   // 必须添加这一行
-  images: {
-    unoptimized: true // 静态导出必须禁用图片优化
-  }
+  output: 'export',
+  images: { unoptimized: true },
+  env: {
+    // 关键：将 GitHub Secrets 里的变量暴露给前端代码
+    NEXT_PUBLIC_GROQ_API_KEY: process.env.GROQ_API_KEY,
+  },
 };
 
 export default nextConfig;
