@@ -2,13 +2,13 @@
   "name": "deepfocus-agent",
   "version": "1.0.0",
   "private": true,
-  "main": "main.js",  // <--- [NEW] 必须告诉 Electron 启动文件
+  "main": "main.js",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "dist": "electron-builder" // <--- [NEW] 必须有打包指令
+    "dist": "electron-builder"
   },
   "dependencies": {
     "clsx": "^2.1.0",
@@ -23,13 +23,13 @@
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
-    "electron": "^40.2.1",
-    "electron-builder": "^26.7.0",
+    "electron": "^32.0.0",
+    "electron-builder": "^24.13.3",
     "postcss": "^8",
     "tailwindcss": "^3.4.1",
     "typescript": "^5"
   },
-  "build": { // <--- [NEW] 这整块是打包的核心配置
+  "build": {
     "appId": "com.jinv2.deepfocus",
     "productName": "DeepFocusAgent",
     "files": [
@@ -40,8 +40,14 @@
     "directories": {
       "output": "dist"
     },
-    "linux": { "target": "deb" },
-    "win": { "target": "nsis" },
-    "mac": { "target": "dmg" }
+    "linux": {
+      "target": "deb"
+    },
+    "win": {
+      "target": "nsis"
+    },
+    "mac": {
+      "target": "dmg"
+    }
   }
 }
