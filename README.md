@@ -20,5 +20,10 @@
 - ## 🌐 开发者
 本项目由 [深思 (Shensi)](https://shensist.top/) 维护。
 *专注打造极简、高效的 AI 生产力工具。*
+
+---
+## 📄 版权声明
+本项目采用 [MIT License](LICENSE) 开源协议。
+Copyright (c) 2026 [Shensi](https://shensist.top/).
 ---
 Developed by [Shensi](https://shensist.top/) - *Focus on what matters.*
