@@ -7,13 +7,10 @@ on:
 
 jobs:
   release:
-    runs-on: ${{ matrix.os }}
-    # 【核心修复】显式授予写入权限，否则 Actions 无法上传生成的 .exe
+    # 暂时只跑 Windows，因为 Windows 环境最宽容
+    runs-on: windows-latest
     permissions:
       contents: write
-    strategy:
-      matrix:
-        os: [ubuntu-latest, windows-latest] # 先跑这两个最稳的
 
     steps:
       - name: Checkout code
@@ -31,15 +28,11 @@ jobs:
       - name: Next.js Export
         run: npm run build
         env:
-          # 必须同时设置这两个，确保 Next.js 构建进程能捕获到
-          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
           NEXT_PUBLIC_GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
 
       - name: Build Electron App
         uses: samuelmeuli/action-electron-builder@v1
         with:
-          # 【核心修复】使用系统自带的 GITHUB_TOKEN
           github_token: ${{ secrets.GITHUB_TOKEN }}
+          # 设为 true，它会自动创建 Release 页面并上传文件
           release: true
-          # 增加这一行，防止某些系统下的构建卡死
-          max_attempts: 3
